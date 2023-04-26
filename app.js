@@ -3,6 +3,9 @@ const dotenv = require("dotenv");
 const path = require("path");
 const colors = require("colors");
 
+// Routers
+const indexRoutes = require("./routes/indexRoutes");
+
 dotenv.config({ path: "./config/config.env" });
 
 const PORT = process.env.PORT || 5000;
@@ -14,9 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", (req, res) => {
-  res.send("Hello from express");
-});
+app.use("/", indexRoutes);
 
 app.listen(PORT, () => {
   console.log(
