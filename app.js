@@ -5,6 +5,7 @@ const colors = require("colors");
 
 // Routers
 const indexRoutes = require("./routes/indexRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 dotenv.config({ path: "./config/config.env" });
 
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRoutes);
+app.use("/user", userRoutes);
 
 app.listen(PORT, () => {
   console.log(
