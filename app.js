@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+dotenv.config({ path: ".env" });
 const path = require("path");
 const colors = require("colors");
 
@@ -10,6 +11,10 @@ const userRoute = require("./routes/userRoute");
 dotenv.config({ path: "./config/config.env" });
 
 const PORT = process.env.PORT || 5000;
+
+// Connect to mongoDB
+const connectDB = require("./config/db");
+connectDB();
 
 const app = express();
 
