@@ -4,8 +4,8 @@ const path = require("path");
 const colors = require("colors");
 
 // Routers
-const indexRoutes = require("./routes/indexRoutes");
-const userRoutes = require("./routes/userRoutes");
+const indexRoute = require("./routes/indexRoute");
+const userRoute = require("./routes/userRoute");
 
 dotenv.config({ path: "./config/config.env" });
 
@@ -18,8 +18,8 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexRoutes);
-app.use("/user", userRoutes);
+app.use("/", indexRoute);
+app.use("/user", userRoute);
 
 app.listen(PORT, () => {
   console.log(
