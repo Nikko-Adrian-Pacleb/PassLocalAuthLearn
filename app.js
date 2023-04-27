@@ -1,5 +1,8 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
 dotenv.config({ path: ".env" });
 const path = require("path");
 const colors = require("colors");
@@ -26,6 +29,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "public")));
+
+// Passport config
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.urlencoded({ extended: false }));
 
 app.use("/", indexRoute);
 app.use("/user", userRoute);
