@@ -34,7 +34,7 @@ exports.user_me_get = (req, res) => {
 //  - If user is logged in, redirect to '/me'
 //  - If user is not logged in, render 'user_register' view
 exports.user_register_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: User register get");
+  res.render("user_register");
 };
 
 // @Path: '/register'
