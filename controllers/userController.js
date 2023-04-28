@@ -3,6 +3,7 @@
 // // Path: controllers\userController.js
 const asynchandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
 
 // @Path: '/'
@@ -33,7 +34,7 @@ exports.user_me_get = (req, res) => {
 //  - Check if user is logged in
 //  - If user is logged in, redirect to '/me'
 //  - If user is not logged in, render 'user_register' view
-exports.user_register_get = (req, res) => {
+exports.user_register_get = (req, res, next) => {
   res.render("user_register");
 };
 
@@ -43,9 +44,62 @@ exports.user_register_get = (req, res) => {
 // @Desc:
 //  - If user input is valid, create a new user
 //  - If user input is invalid, render 'user_register' view with errors
-exports.user_register_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: User register post");
-};
+exports.user_register_post = [
+  // Validate and sanitize fields.
+  body("email")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Email must not be empty.")
+    .isEmail()
+    .withMessage("Email must be valid.")
+    .normalizeEmail(),
+  body("username")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Username must not be empty.")
+    .isAlphanumeric()
+    .withMessage("Username must be alphanumeric."),
+  body("password", "Password must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  asynchandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log(errors);
+      return res.render("user_register", { errors: errors.array() });
+    }
+
+    // Check if user already exists
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      console.log("User already exists.");
+      return res.render("user_register", {
+        errors: [{ msg: "User already exists." }],
+      });
+    }
+
+    // If user does not exist, create a new user
+    try {
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+      const newUser = new User({
+        email: req.body.email,
+        username: req.body.username,
+        password: hashedPassword,
+      });
+      await newUser.save();
+      res.send("User created successfully.");
+    } catch (err) {
+      return next(err);
+    }
+  }),
+];
 
 // @Path: '/login'
 // @Mehtod: GET
