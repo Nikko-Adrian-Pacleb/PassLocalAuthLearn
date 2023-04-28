@@ -109,7 +109,7 @@ exports.user_register_post = [
 //  - If user is logged in, redirect to '/me'
 //  - If user is not logged in, render 'user_login' view
 exports.user_login_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: User login get");
+  res.render("user_login");
 };
 
 // @Path: '/login'
