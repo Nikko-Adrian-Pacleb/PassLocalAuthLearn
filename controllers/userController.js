@@ -3,8 +3,9 @@
 // // Path: controllers\userController.js
 const asynchandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
+const passport = require("passport");
 
 // @Path: '/'
 // @Mehtod: GET
@@ -24,7 +25,7 @@ exports.user_index = (req, res) => {
 //  - If user is logged in, render 'user_me' view
 //  - If user is not logged in, redirect to '/login'
 exports.user_me_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: User me get");
+  res.render("user_me", { user: req.user });
 };
 
 // @Path: '/register'
@@ -112,12 +113,64 @@ exports.user_login_get = (req, res) => {
   res.render("user_login");
 };
 
+//@Path: '/login'
+//@Method: POST
+//@Access: Public
+//@Desc:
+// - If user input is valid, log in user
+// - If user input is invalid, render 'user_login' view with errors
+exports.user_login_post = passport.authenticate("local", {
+  successRedirect: "/user/me",
+  failureRedirect: "/login",
+});
+
 // @Path: '/login'
 // @Mehtod: POST
 // @Access: Public
 // @Desc:
 //  - If user input is valid, log in user
 //  - If user input is invalid, render 'user_login' view with errors
-exports.user_login_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: User login post");
-};
+// exports.user_login_post = [
+//   // Validate and sanitize fields.
+//   body("email")
+//     .trim()
+//     .isLength({ min: 1 })
+//     .escape()
+//     .withMessage("Email must not be empty.")
+//     .isEmail()
+//     .withMessage("Email must be valid.")
+//     .normalizeEmail(),
+//   body("password", "Password must not be empty.")
+//     .trim()
+//     .isLength({ min: 1 })
+//     .escape(),
+//   asynchandler(async (req, res, next) => {
+//     // Extract the validation errors from a request.
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       console.log(errors);
+//       return res.render("user_login", { errors: errors.array() });
+//     }
+
+//     // Check if user exists
+//     const user = User.find({ email: req.body.email });
+//     if (!user) {
+//       console.log("User does not exist.");
+//       return res.render("user_login", {
+//         errors: [{ msg: "User does not exist." }],
+//       });
+//     }
+
+//     // If user exists, check if password is correct
+//     const validPassword = await bcrypt.compare(req.body.password, user.password);
+//     if (!validPassword) {
+//       console.log("Invalid password.");
+//       return res.render("user_login", {
+//         errors: [{ msg: "Invalid password." }],
+//       });
+//     }
+
+//     // If password is correct, log in user
+
+//   }),
+// ]
