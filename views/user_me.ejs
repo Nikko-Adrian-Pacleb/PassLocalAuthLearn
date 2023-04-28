@@ -7,12 +7,18 @@
     <title>Home Page</title>
   </head>
   <body>
-    <% if (user.username) {%>
-    <h1>Welcome <%= user.username %></h1>
-    <a href="/user/logout">Logout</a>
+    <h1>Home Page</h1>
+    <h2>User: <%= user.username %></h5>
+    <br />
+    <h3>Notes:</h6>
+    <% if(notes.length === 0){ %>
+    <h4>No notes found</h4>
     <% } else {%>
-    <a href="/user/login">Login</a>
-    <a href="/user/register">Register</a>
+        <ul>
+      <% notes.forEach((note) => { %>
+      <li><%= note.title %></li>
+      <% }) %>
+    </ul>
     <% } %>
   </body>
 </html>

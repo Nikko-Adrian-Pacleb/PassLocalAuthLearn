@@ -4,8 +4,9 @@
 const asynchandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
-const User = require("../models/userModel");
 const passport = require("passport");
+const User = require("../models/userModel");
+const Note = require("../models/noteModel");
 
 // @Path: '/'
 // @Mehtod: GET
@@ -14,7 +15,11 @@ const passport = require("passport");
 //  - Check if user is logged in
 //  - If user is logged in, redirect to '/me'-
 exports.user_index = (req, res) => {
-  res.send("NOT IMPLEMENTED: User index");
+  if (!res.locals.user._id) {
+    res.redirect("/user/login");
+  } else {
+    res.redirect("/user/me");
+  }
 };
 
 // @Path: '/me'
@@ -24,9 +29,14 @@ exports.user_index = (req, res) => {
 //  - Check if user is logged in
 //  - If user is logged in, render 'user_me' view
 //  - If user is not logged in, redirect to '/login'
-exports.user_me_get = (req, res) => {
-  res.render("user_me", { user: req.user });
-};
+exports.user_me_get = asynchandler(async (req, res, next) => {
+  if (!res.locals.user._id) {
+    res.redirect("/user/login");
+  } else {
+    const notes = await Note.find({ user: res.locals.user._id });
+    res.render("user_me", { user: res.locals.user, notes: notes });
+  }
+});
 
 // @Path: '/register'
 // @Mehtod: GET
@@ -35,9 +45,7 @@ exports.user_me_get = (req, res) => {
 //  - Check if user is logged in
 //  - If user is logged in, redirect to '/me'
 //  - If user is not logged in, render 'user_register' view
-exports.user_register_get = (req, res, next) => {
-  res.render("user_register");
-};
+exports.user_register_get = (req, res, next) => {};
 
 // @Path: '/register'
 // @Mehtod: POST

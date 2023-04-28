@@ -1,4 +1,5 @@
 const { body, validationResult } = require("express-validator");
+const asynchandler = require("express-async-handler");
 const Note = require("../models/noteModel");
 const User = require("../models/userModel");
 
@@ -9,15 +10,14 @@ const User = require("../models/userModel");
 //  - Check if user is logged in
 //  - If user is logged in, render 'note_index' view
 //  - If user is not logged in, redirect to '/login'
-exports.note_index = (req, res) => {
-  if (!req.user) {
-    res.send(`You are not logged in. <a href="/user/login">Login</a>`);
+exports.note_index = asynchandler(async (req, res) => {
+  if (!res.locals.user) {
+    res.redirect("/login");
   } else {
-    res.send(
-      `You are logged in as ${req.user.username}. <a href="/user/logout">Logout</a>`
-    );
+    const notes = await Note.find({ author: res.locals.user._id });
+    res.render("note_index", { user: res.locals.user, notes: notes });
   }
-};
+});
 
 // @Path: '/note/create'
 // @Mehtod: GET
