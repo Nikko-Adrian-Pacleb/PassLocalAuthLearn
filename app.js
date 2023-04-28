@@ -13,6 +13,7 @@ const User = require("./models/userModel");
 // Routers
 const indexRoute = require("./routes/indexRoute");
 const userRoute = require("./routes/userRoute");
+const noteRoute = require("./routes/noteRoute");
 
 dotenv.config({ path: "./config/config.env" });
 
@@ -90,8 +91,18 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 
+// Global variables
+app.use((req, res, next) => {
+  res.locals.user = {
+    username: req.user ? req.user.username : null,
+    email: req.user ? req.user.email : null,
+  };
+  next();
+});
+
 app.use("/", indexRoute);
 app.use("/user", userRoute);
+app.use("/note", noteRoute);
 
 app.listen(PORT, () => {
   console.log(

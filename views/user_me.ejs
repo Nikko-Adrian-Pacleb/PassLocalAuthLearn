@@ -7,7 +7,7 @@
     <title>Home Page</title>
   </head>
   <body>
-    <% if (user) {%>
+    <% if (user.username) {%>
     <h1>Welcome <%= user.username %></h1>
     <a href="/user/logout">Logout</a>
     <% } else {%>
