@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Notes</title>
+  </head>
+  <body>
+    <h1>All Notes</h1>
+    <h3>User: <%= user.username %></h3>
+    <% if(notes.length === 0){ %>
+    <h4>No notes found</h4>
+    <% } else {%>
+        <ul>
+      <% notes.forEach((note) => { %>
+      <li><%= note.noteContent %></li>
+      <% }) %>
+    <% } %>
+  </body>
+</html>

@@ -93,11 +93,15 @@ app.use(express.urlencoded({ extended: false }));
 
 // Global variables
 app.use((req, res, next) => {
-  res.locals.user = {
-    _id: req.user ? req.user._id : null,
-    username: req.user ? req.user.username : null,
-    email: req.user ? req.user.email : null,
-  };
+  if (req.user) {
+    res.locals.user = {
+      _id: req.user._id,
+      username: req.user.username,
+      email: req.user.email,
+    };
+  } else {
+    res.locals.user = null;
+  }
   next();
 });
 
