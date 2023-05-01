@@ -15,7 +15,7 @@ const Note = require("../models/noteModel");
 //  - Check if user is logged in
 //  - If user is logged in, redirect to '/me'-
 exports.user_index = (req, res) => {
-  if (!res.locals.user._id) {
+  if (!res.locals.user) {
     res.redirect("/user/login");
   } else {
     res.redirect("/user/me");
@@ -30,7 +30,7 @@ exports.user_index = (req, res) => {
 //  - If user is logged in, render 'user_me' view
 //  - If user is not logged in, redirect to '/login'
 exports.user_me_get = asynchandler(async (req, res, next) => {
-  if (!res.locals.user._id) {
+  if (!res.locals.user) {
     res.redirect("/user/login");
   } else {
     const notes = await Note.find({ user: res.locals.user._id });
@@ -45,7 +45,13 @@ exports.user_me_get = asynchandler(async (req, res, next) => {
 //  - Check if user is logged in
 //  - If user is logged in, redirect to '/me'
 //  - If user is not logged in, render 'user_register' view
-exports.user_register_get = (req, res, next) => {};
+exports.user_register_get = (req, res, next) => {
+  if (!res.locals.user) {
+    res.render("user_register");
+  } else {
+    res.redirect("/user/me");
+  }
+};
 
 // @Path: '/register'
 // @Mehtod: POST
@@ -103,7 +109,7 @@ exports.user_register_post = [
         password: hashedPassword,
       });
       await newUser.save();
-      res.send("User created successfully.");
+      res.redirect("/user/login");
     } catch (err) {
       return next(err);
     }
@@ -118,7 +124,11 @@ exports.user_register_post = [
 //  - If user is logged in, redirect to '/me'
 //  - If user is not logged in, render 'user_login' view
 exports.user_login_get = (req, res) => {
-  res.render("user_login");
+  if (!res.locals.user) {
+    res.render("user_login");
+  } else {
+    res.redirect("/user/me");
+  }
 };
 
 //@Path: '/login'
@@ -142,5 +152,5 @@ exports.user_logout_get = (req, res) => {
   req.logout((err) => {
     if (err) return next(err);
   });
-  res.redirect("/me");
+  res.redirect("/user/me");
 };
